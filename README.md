@@ -1,10 +1,21 @@
-# ⏱ macron
-> Simple GUI to managing your local crontab on macOS
+# Macroni
 
-For me, CronniX had been the go to simple GUI for managing my local crons, but sadly this is no longer suported, so here is a modern alternative for those who still want it.
+> macOS crontab manager for agent automation tasks — a modern fork of [Macron](https://github.com/OwenMelbz/macron) by [Owen Melbourne](https://github.com/OwenMelbz).
 
-<img title="Screenshot" src="https://github.com/OwenMelbz/macron/blob/master/screenshot.jpg?raw=true" />
+Built with Electron + React + TypeScript + Tailwind CSS v4. Features a frosted-glass sidebar, natural language schedule entry, and a live cron preview.
+
+## Credits
+
+This project is derived from **Macron** (© Owen Melbourne), originally created as a simple GUI for managing macOS crontab jobs. The original source is at [github.com/OwenMelbz/macron](https://github.com/OwenMelbz/macron).
+
+## Development
+
+```bash
+npm run dev          # hot-reload dev mode
+npm run build        # typecheck + build
+npm run build:mac    # package as macOS DMG
+```
 
 ## Privacy Policy & Terms of Use
 
-We take no responsibility to how you use this application, we do not store or track any data, everything is local to the device it is installed on. Periodically we check for updates by connecting to GitHub, no private information is exchanged.
+No data is stored or tracked. Everything is local to the device. Cron jobs are written directly to your system crontab via the standard `crontab` command.
