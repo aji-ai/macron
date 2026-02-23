@@ -64,10 +64,17 @@ ipcMain.handle('crontab:getJobs', async () => {
 })
 
 ipcMain.handle('crontab:saveJob', async (_event, job) => {
+  if (
+    typeof job?.id !== 'string' ||
+    typeof job?.name !== 'string' ||
+    typeof job?.command !== 'string' ||
+    typeof job?.schedule !== 'string'
+  ) throw new Error('Invalid job payload')
   await crontabService.saveJob(job)
 })
 
-ipcMain.handle('crontab:deleteJob', async (_event, id: string) => {
+ipcMain.handle('crontab:deleteJob', async (_event, id) => {
+  if (typeof id !== 'string') throw new Error('Invalid id')
   await crontabService.deleteJob(id)
 })
 
