@@ -38,6 +38,9 @@
     "tailwind-merge": "^3.5.0",
     "uuid": "^13.0.0"
   },
+  "overrides": {
+    "minimatch": ">=10.2.1"
+  },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
     "@electron-toolkit/eslint-config-ts": "^3.1.0",
