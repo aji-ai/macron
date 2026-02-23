@@ -1,7 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain, TouchBar } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, TouchBar, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import * as crontabService from './crontabService'
+import * as macronHomeService from './macronHomeService'
 
 const { TouchBarButton } = TouchBar
 
@@ -64,12 +65,22 @@ ipcMain.handle('crontab:getJobs', async () => {
 })
 
 ipcMain.handle('crontab:saveJob', async (_event, job) => {
+  // Validate required fields - command can be empty for copilot jobs
   if (
     typeof job?.id !== 'string' ||
     typeof job?.name !== 'string' ||
-    typeof job?.command !== 'string' ||
     typeof job?.schedule !== 'string'
-  ) throw new Error('Invalid job payload')
+  ) {
+    throw new Error('Invalid job payload: missing required fields')
+  }
+  // For copilot jobs, command may be empty but we need type and prompt/pipelineSteps
+  if (job.type === 'copilot') {
+    if (!job.prompt && (!job.pipelineSteps || job.pipelineSteps.length === 0)) {
+      throw new Error('Copilot job requires prompt or pipeline steps')
+    }
+  } else if (typeof job.command !== 'string' || !job.command.trim()) {
+    throw new Error('Shell job requires a command')
+  }
   await crontabService.saveJob(job)
 })
 
@@ -78,7 +89,47 @@ ipcMain.handle('crontab:deleteJob', async (_event, id) => {
   await crontabService.deleteJob(id)
 })
 
-app.whenReady().then(() => {
+// Macron Home IPC handlers
+ipcMain.handle('macron:ensureHome', async () => {
+  await macronHomeService.ensureMacronHome()
+})
+
+ipcMain.handle('macron:readLog', async (_event, lines?: number) => {
+  return await macronHomeService.readLog(lines)
+})
+
+ipcMain.handle('macron:clearLog', async () => {
+  await macronHomeService.clearLog()
+})
+
+ipcMain.handle('macron:getConfig', async () => {
+  return await macronHomeService.getConfig()
+})
+
+ipcMain.handle('macron:setConfig', async (_event, config) => {
+  await macronHomeService.setConfig(config)
+})
+
+ipcMain.handle('macron:listScripts', async () => {
+  return await macronHomeService.listScripts()
+})
+
+ipcMain.handle('macron:selectDirectory', async (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender)
+  if (!win) return null
+  const result = await dialog.showOpenDialog(win, {
+    properties: ['openDirectory', 'createDirectory']
+  })
+  if (result.canceled || result.filePaths.length === 0) return null
+  return result.filePaths[0]
+})
+
+app.whenReady().then(async () => {
+  // Ensure ~/.macron/ folder structure exists
+  await macronHomeService.ensureMacronHome()
+  // Clean up old log entries based on retention policy
+  await macronHomeService.cleanupOldLogs()
+
   electronApp.setAppUserModelId('com.aji-ai.macroni')
 
   app.on('browser-window-created', (_, window) => {

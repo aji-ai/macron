@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import type { CronJobData } from '../types'
 import { JobList } from './JobList'
 import { HelpDialog } from './HelpDialog'
+import { LogViewer, LogViewerButton } from './LogViewer'
+import { SettingsDialog, SettingsButton } from './SettingsDialog'
 import { Button } from './ui/button'
 import { ScrollArea } from './ui/scroll-area'
 
@@ -13,6 +16,9 @@ interface Props {
 }
 
 export function Sidebar({ jobs, loading, selectedId, onSelect }: Props) {
+  const [showLogs, setShowLogs] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+
   return (
     <div className="w-[220px] flex-shrink-0 flex flex-col h-full sidebar-vibrancy border-r border-black/[0.06]">
       {/* Traffic light spacer — drag region */}
@@ -23,7 +29,11 @@ export function Sidebar({ jobs, loading, selectedId, onSelect }: Props) {
         <h1 className="text-xs font-semibold text-foreground/50 tracking-widest uppercase">
           Macroni
         </h1>
-        <HelpDialog />
+        <div className="flex items-center gap-1">
+          <LogViewerButton onClick={() => setShowLogs(true)} />
+          <SettingsButton onClick={() => setShowSettings(true)} />
+          <HelpDialog />
+        </div>
       </div>
 
       {/* Job list */}
@@ -49,6 +59,10 @@ export function Sidebar({ jobs, loading, selectedId, onSelect }: Props) {
           New Job
         </Button>
       </div>
+
+      {/* Dialogs */}
+      <LogViewer open={showLogs} onOpenChange={setShowLogs} />
+      <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
     </div>
   )
 }

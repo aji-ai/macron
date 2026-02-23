@@ -1,8 +1,44 @@
+export type CopilotMode = 'ask' | 'plan' | 'safe' | 'agent'
+
+export interface PipelineStep {
+  mode: CopilotMode
+  prompt: string
+}
+
 export interface CronJobData {
   id: string
   name: string
   command: string
   schedule: string
+  // Copilot-specific fields
+  type?: 'shell' | 'copilot'
+  copilotMode?: CopilotMode
+  workingDir?: string
+  prompt?: string
+  pipelineSteps?: PipelineStep[]
+  logEnabled?: boolean
+}
+
+export interface LogEntry {
+  timestamp: string
+  jobId: string
+  jobName: string
+  mode: CopilotMode | 'shell'
+  command: string
+  output: string
+  exitCode: number
+  error?: string
+}
+
+export interface MacronConfig {
+  defaultWorkingDir: string
+  logRetentionDays: number
+  models: {
+    ask: string
+    plan: string
+    safe: string
+    agent: string
+  }
 }
 
 export interface SchedulePreset {

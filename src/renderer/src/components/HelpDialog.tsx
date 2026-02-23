@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { HelpCircle, Terminal, CheckCircle, Copy, Check } from 'lucide-react'
+import { HelpCircle, Terminal, CheckCircle, Copy, Check, Bot } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -73,6 +73,32 @@ export function HelpDialog() {
               </p>
               <CopyBlock code={`echo "$(date): macron ran" >> /tmp/macron-test.log`} />
               <CopyBlock code="tail -f /tmp/macron-test.log" />
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 font-medium">
+                <Bot className="w-4 h-4 text-muted-foreground" />
+                Set up Copilot for scheduled jobs
+              </div>
+              <p className="text-muted-foreground text-xs">
+                Cron can't access your keychain. First, make sure you've logged in to the
+                Copilot CLI at least once:
+              </p>
+              <CopyBlock code="copilot login" />
+              <p className="text-muted-foreground text-xs">
+                Then export the OAuth token from keychain for cron to use:
+              </p>
+              <CopyBlock code="security find-generic-password -s copilot-cli -w | tr -d '\n' > ~/.macron/github-token" />
+              <p className="text-muted-foreground text-xs">
+                Run this again after re-authenticating with <code className="font-mono bg-muted px-1 rounded">copilot login</code>.
+              </p>
+              <p className="text-muted-foreground text-xs mt-2">
+                If you use <strong>WorkIQ</strong> (Microsoft 365 queries), also export its token cache:
+              </p>
+              <CopyBlock code={`security find-generic-password -s work-iq-cli -a MSALCache -w > ~/.work-iq-cli/msal_token_cache.dat`} />
+              <p className="text-muted-foreground text-xs">
+                Run <code className="font-mono bg-muted px-1 rounded">npx -y @microsoft/workiq ask -q "ping"</code> first if you haven't logged in to WorkIQ yet.
+              </p>
             </div>
 
             <p className="text-xs text-muted-foreground border-t pt-3">
