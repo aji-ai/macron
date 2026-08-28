@@ -8,7 +8,7 @@ const { TouchBarButton } = TouchBar
 
 // Fix PATH for packaged app so crontab binary is found
 if (process.platform === 'darwin' && app.isPackaged) {
-  process.env.PATH = `/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${process.env.PATH ?? ''}`
+  process.env.PATH = `/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${process.env.PATH ?? ''}`
 }
 
 function createWindow(): void {
